@@ -1,0 +1,138 @@
+<div class="container mt-4">
+
+    <!-- CABEÇALHO -->
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-8">
+            <h2 class="fw-bold mb-0">Ingressos</h2>
+            <p class="text-muted">Gerencie as entradas de novos ingressos</p>
+        </div>
+
+        <!-- INTERPOLAÇÃO COM SIGNAL: O {{ ingressos().length }} pega o tamanho real do array gerido pelo Signal no TypeScript -->
+        <div class="col-md-4 d-flex justify-content-end">
+            <div class="card shadow-sm px-5 py-3 text-center border-0" style="border-radius: 12px;">
+                <h2 class="fw-bold mb-0">{{ ingressos().length }}</h2>
+                <small class="text-muted fw-medium">Total de ingressos</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="d-flex justify-content-between align-items-end mb-3">
+
+        <div style="width: 250px;">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 14px;">Buscar por cpf:</label>
+            <div class="input-group input-group-sm">
+                <input type="text" class="form-control" [(ngModel)]="termoBusca" placeholder="Ex: 4942424242-9">
+            </div>
+        </div>
+
+        <!-- BOTÃO DO MODAL -->
+        <button class="btn btn-success fw-bold px-3 py-1" style="border-radius: 6px;" data-bs-toggle="modal"
+            data-bs-target="#modalNovaVenda" (click)="prepararCadastro()">
+            Novo Ingresso +
+        </button>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-responsive shadow-sm" style="border-radius: 8px; overflow: hidden;">
+        <table class="table table-hover bg-white mb-0 text-center align-middle">
+            <thead class="bg-light">
+                <tr>
+                    <th class="py-3 text-muted">ID</th>
+                    <th class="py-3 text-muted">Cpf</th>
+                    <th class="py-3 text-muted">Titular</th>
+                    <th class="py-3 text-muted">Jogo</th>
+                    <th class="py-3 text-muted">Setor</th>
+                    <th class="py-3 text-muted">Assento</th>
+                    <th class="py-3 text-muted">Preço</th>
+                    <th class="py-3 text-muted">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- DIRETIVA COM SIGNAL: O ingressos() chama o array reativo -->
+                <tr *ngFor="let ing of ingressos()">
+                    <td class="fw-medium">{{ ing.id }}</td>
+                    <td>{{ ing.cpf }}</td>
+                    <td>{{ ing.titular }}</td>
+                    <td>{{ ing.jogo }}</td>
+                    <td>{{ ing.setor }}</td>
+                    <td>{{ ing.assento }}</td>
+                    <td>{{ ing.preco | currency:'BRL' }}</td>
+                    <td>
+                        <button class="btn btn-sm text-white px-3 me-2"
+                            style="background-color: #5100FF; border-radius: 4px;" data-bs-toggle="modal"
+                            data-bs-target="#modalNovaVenda" (click)="prepararEdicao(ing)">Editar</button>
+                        <button class="btn btn-danger btn-sm px-3" style="border-radius: 4px;"
+                            (click)="excluir(ing)">Excluir</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL BOOTSTRAP -->
+<div class="modal fade" id="modalNovaVenda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px;">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" style="font-size: 16px;">{{ isEditing ? 'Editar venda' : 'Nova venda' }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- REACTIVE FORMS: O [formGroup] engloba todos os inputs -->
+            <div class="modal-body" [formGroup]="formGroupIngresso">
+
+                <div class="mb-3">
+                    <label class="form-label text-muted" style="font-size: 12px;">Titular</label>
+                    <!-- formControlName substitui o ngModel -->
+                    <input type="text" class="form-control" formControlName="titular">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted" style="font-size: 12px;">Cpf</label>
+                    <input type="text" class="form-control" formControlName="cpf">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted" style="font-size: 12px;">Jogo</label>
+                    <select class="form-select" formControlName="jogo">
+                        <option value="Brasil x Marrocos">Brasil x Marrocos</option>
+                        <option value="Argentina x França">Argentina x França</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted" style="font-size: 12px;">Setor</label>
+                        <select class="form-select" formControlName="setor">
+                            <option value="A norte">A norte</option>
+                            <option value="B sul">B sul</option>
+                            <option value="VIP">VIP</option>
+                        </select>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted" style="font-size: 12px;">Assento</label>
+                        <input type="text" class="form-control" formControlName="assento">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted" style="font-size: 12px;">Preço</label>
+                    <input type="number" class="form-control" formControlName="preco">
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn text-white px-4"
+                    style="background-color: #9E9E9E; border-radius: 20px;" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn text-white px-4"
+                    style="background-color: #5100FF; border-radius: 20px;" (click)="salvar()"
+                    data-bs-dismiss="modal">Salvar</button>
+            </div>
+
+        </div>
+    </div>
+</div>

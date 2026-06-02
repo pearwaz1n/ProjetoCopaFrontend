@@ -1,0 +1,66 @@
+<div class="container mt-4 mb-5">
+
+    <div class="row mb-4">
+        <div class="col-12 text-center text-md-start">
+            <h2 class="fw-bold mb-0">Classificação dos Grupos</h2>
+            <p class="text-muted">Acompanhe a tabela dos grupos!</p>
+        </div>
+    </div>
+
+    <div *ngIf="carregando()" class="text-center py-5">
+        <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+
+    <div class="row g-4" *ngIf="!carregando()">
+
+        <div class="col-12 col-lg-6" *ngFor="let grupo of grupos()">
+
+            <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
+                <div class="card-header bg-dark text-white border-bottom-0 py-3" style="border-radius: 12px 12px 0 0;">
+                    <h5 class="mb-0 fw-bold text-center">{{ grupo.group | uppercase }}</h5>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 text-center align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 text-muted" style="width: 5%;">#</th>
+                                    <th class="py-2 text-muted text-start" style="width: 40%;">Seleção</th>
+                                    <th class="py-2 text-muted" title="Pontos">Pts</th>
+                                    <th class="py-2 text-muted" title="Jogos">J</th>
+                                    <th class="py-2 text-muted" title="Vitórias">V</th>
+                                    <th class="py-2 text-muted" title="Empates">E</th>
+                                    <th class="py-2 text-muted" title="Derrotas">D</th>
+                                    <th class="py-2 text-muted" title="Saldo de Gols">SG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr *ngFor="let linha of grupo.table">
+                                    <td class="fw-bold">{{ linha.position }}º</td>
+                                    <td class="text-start fw-medium">
+                                        <img *ngIf="linha.team.crest" [src]="linha.team.crest" alt="Bandeira" width="25"
+                                            class="me-2 shadow-sm rounded-circle">
+                                        {{ linha.team.name }}
+                                    </td>
+                                    <td class="fw-bold text-success">{{ linha.points }}</td>
+                                    <td>{{ linha.playedGames }}</td>
+                                    <td>{{ linha.won }}</td>
+                                    <td>{{ linha.draw }}</td>
+                                    <td>{{ linha.lost }}</td>
+                                    <td>{{ linha.goalDifference }}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

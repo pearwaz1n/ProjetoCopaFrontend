@@ -1,0 +1,32 @@
+<div class="container-fluid p-0 overflow-hidden">
+    <div class="row g-0 min-vh-100 align-items-stretch">
+        <!-- Lado Esquerdo: Texto (centralizado verticalmente) -->
+        <div class="col-md-6 d-flex flex-column justify-content-center p-5 bg-light">
+            <div class="px-lg-5">
+                <span class="badge bg-primary text-uppercase px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">Copa do
+                    Mundo 2026</span>
+                <h1 class="display-3 fw-bold text-dark mb-3">Bem-vindo!</h1>
+                <p class="text-muted fs-4 mb-4">
+                    Controle total de vendas de ingressos do torneio em um só lugar.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a routerLink="/ingressos" class="btn btn-dark btn-lg px-4 py-3 rounded-pill fw-bold shadow-sm">
+                        Comprar Ingressos
+                    </a>
+                    <a routerLink="/calendario" class="btn btn-outline-secondary btn-lg px-4 py-3 rounded-pill fw-bold">
+                        Ver Calendário
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Lado Direito: Imagem sem cortes em cima e embaixo -->
+        <div class="col-md-6 position-relative d-none d-md-block" style="min-height: 400px;">
+            <img src="/image.png" alt="Banner da Copa"
+                class="w-100 h-100 object-fit-contain position-absolute top-0 start-0">
+        </div>
+        <!-- Fallback visível apenas no mobile -->
+        <div class="col-12 d-block d-md-none p-0 text-center">
+            <img src="/image.png" alt="Banner da Copa" class="w-100 object-fit-contain" style="max-height: 300px;">
+        </div>
+    </div>
+</div>

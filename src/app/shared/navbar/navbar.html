@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+    <div class="container">
+        <!-- Logo / Nome do Sistema -->
+        <a class="navbar-brand fw-bold text-dark" routerLink="/tela-inicial">
+            Sistema de Jogos da Copa
+        </a>
+
+        <!-- Botão menu hamburguer para celular -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Links da Navbar -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto gap-3">
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" routerLink="/tela-inicial"
+                        routerLinkActive="fw-bold text-dark">Tela Inicial</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" routerLink="/grupos"
+                        routerLinkActive="fw-bold text-dark">Grupos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" routerLink="/calendario"
+                        routerLinkActive="fw-bold text-dark">Calendário</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-secondary" routerLink="/ingressos"
+                        routerLinkActive="fw-bold text-dark">Ingressos</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
