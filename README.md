@@ -1,59 +1,37 @@
-# ProjetoCopa
+#  Projeto Copa - Sistema de Gestão de Ingressos
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+##  Sobre o Projeto
+Projeto frontend desenvolvido como avaliação para aula de desenvolvimento web.
+O sistema simula a compra e gestão de ingressos para os jogos da Copa, apresentando calendários interativos e a tabela oficial de classificação dos grupos em tempo real.
 
-## Development server
+##  Design / Protótipo
+O planejamento visual e estrutural das telas foi desenhado previamente para guiar o desenvolvimento.
+🔗 **[Clique aqui para acessar o protótipo no Figma](https://www.figma.com/site/qsvk5Ep5312EFdtozKYhfR/ProjetoDaCopa?node-id=0-1&t=uiz7Q7iG2NJ8UdfH-1)**
 
-To start a local development server, run:
+##  Tecnologias Utilizadas
+* **Angular 16+:** Arquitetura moderna utilizando `Signals` para reatividade e controle de estado.
+* **Reactive Forms:** Validação, segurança e controle estruturado do formulário de gestão de ingressos.
+* **Bootstrap 5:** Componentização visual, grids responsivos e modais.
+* **Integração de API:** Consumo da API REST [football-data.org](https://www.football-data.org/) para a extração de dados reais das partidas e tabelas.
 
+##  Como executar o projeto localmente
+
+1. Clone este repositório: 
 ```bash
-ng serve
+git clone [https://github.com/pearwaz1n/ProjetoCopa.git](https://github.com/pearwaz1n/ProjetoCopa.git)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. Acesse a pasta do projeto: 
 ```bash
-ng generate component component-name
+cd ProjetoCopa
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. Instale as dependências: 
 ```bash
-ng generate --help
+npm install
 ```
 
-## Building
-
-To build the project run:
-
+4. Rode o projeto localmente: 
 ```bash
-ng build
+ng s -o
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
