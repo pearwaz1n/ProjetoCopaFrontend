@@ -7,7 +7,7 @@ import { IngressoVenda } from '../ingresso';
   providedIn: 'root',
 })
 export class IngressosService {
-  apiUrl = "http://localhost:4200/ingressos"; // Usando a porta 4200 por enquanto como você pediu
+  apiUrl = "http://localhost:8080/ingressos"; // porta do backend
 
   constructor(private http: HttpClient) { }
 
