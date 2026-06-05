@@ -3,16 +3,33 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IngressoVenda } from '../ingresso';
 
+//interface api
+export interface JogoCopa {
+  dataHora: string;
+  grupo: string;
+  timeMandante: string;
+  timeVisitante: string;
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
+
 export class IngressosService {
-  apiUrl = "http://localhost:8080/ingressos"; // porta do backend
+
+  private apiUrl = "http://localhost:8080/ingressos";
+  private jogosUrl = "http://localhost:8080/jogos";
+
 
   constructor(private http: HttpClient) { }
 
-  getAllIngressos(): Observable<IngressoVenda[]> {
-    return this.http.get<IngressoVenda[]>(this.apiUrl);
+  getAllIngressos() {
+    // Pega a data/hora exata do milissegundo atual
+    const tempoAtual = new Date().getTime();
+
+    // Coloca o tempo na URL 
+    return this.http.get<IngressoVenda[]>(`${this.apiUrl}?t=${tempoAtual}`);
   }
 
   save(ingresso: IngressoVenda): Observable<IngressoVenda> {
@@ -25,5 +42,9 @@ export class IngressosService {
 
   update(ingresso: IngressoVenda): Observable<IngressoVenda> {
     return this.http.put<IngressoVenda>(`${this.apiUrl}/${ingresso.id}`, ingresso);
+  }
+  //pegar jogos
+  getJogosDaCopa() {
+    return this.http.get<JogoCopa[]>(this.jogosUrl);
   }
 }

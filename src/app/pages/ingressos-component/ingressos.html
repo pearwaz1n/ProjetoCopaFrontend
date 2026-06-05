@@ -1,13 +1,11 @@
 <div class="container mt-4">
 
-    <!-- CABEÇALHO -->
     <div class="row mb-4 align-items-end">
         <div class="col-md-8">
             <h2 class="fw-bold mb-0">Ingressos</h2>
             <p class="text-muted">Gerencie as entradas de novos ingressos</p>
         </div>
 
-        <!-- INTERPOLAÇÃO COM SIGNAL: O {{ ingressos().length }} pega o tamanho real do array gerido pelo Signal no TypeScript -->
         <div class="col-md-4 d-flex justify-content-end">
             <div class="card shadow-sm px-5 py-3 text-center border-0" style="border-radius: 12px;">
                 <h2 class="fw-bold mb-0">{{ ingressos().length }}</h2>
@@ -16,9 +14,7 @@
         </div>
     </div>
 
-    <!-- ACTION BAR -->
     <div class="d-flex justify-content-between align-items-end mb-3">
-
         <div style="width: 250px;">
             <label class="form-label text-dark fw-medium mb-1" style="font-size: 14px;">Buscar por cpf:</label>
             <div class="input-group input-group-sm">
@@ -26,14 +22,12 @@
             </div>
         </div>
 
-        <!-- BOTÃO DO MODAL -->
         <button class="btn btn-success fw-bold px-3 py-1" style="border-radius: 6px;" data-bs-toggle="modal"
             data-bs-target="#modalNovaVenda" (click)="prepararCadastro()">
             Novo Ingresso +
         </button>
     </div>
 
-    <!-- TABELA -->
     <div class="table-responsive shadow-sm" style="border-radius: 8px; overflow: hidden;">
         <table class="table table-hover bg-white mb-0 text-center align-middle">
             <thead class="bg-light">
@@ -49,7 +43,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- DIRETIVA COM SIGNAL: O ingressos() chama o array reativo -->
                 <tr *ngFor="let ing of ingressos()">
                     <td class="fw-medium">{{ ing.id }}</td>
                     <td>{{ ing.cpf }}</td>
@@ -71,7 +64,6 @@
     </div>
 </div>
 
-<!-- MODAL BOOTSTRAP -->
 <div class="modal fade" id="modalNovaVenda" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 12px;">
@@ -82,55 +74,100 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <!-- REACTIVE FORMS: O [formGroup] engloba todos os inputs -->
             <div class="modal-body" [formGroup]="formGroupIngresso">
+
+                <div *ngIf="erroServidor()" class="alert alert-danger" style="font-size: 13px; padding: 10px;">
+                    <strong>Atenção!</strong> {{ erroServidor() }}
+                </div>
 
                 <div class="mb-3">
                     <label class="form-label text-muted" style="font-size: 12px;">Titular</label>
-                    <!-- formControlName substitui o ngModel -->
                     <input type="text" class="form-control" formControlName="titular">
+                    <div *ngIf="formGroupIngresso.get('titular')?.invalid && formGroupIngresso.get('titular')?.touched"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        <span *ngIf="formGroupIngresso.get('titular')?.errors?.['required']">O nome é
+                            obrigatório.</span>
+                        <span *ngIf="formGroupIngresso.get('titular')?.errors?.['minlength']">O nome deve ter no mínimo
+                            3 caracteres.</span>
+                        <span *ngIf="formGroupIngresso.get('titular')?.errors?.['maxlength']">O nome deve ter no máximo
+                            100 caracteres.</span>
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label text-muted" style="font-size: 12px;">Cpf</label>
-                    <input type="text" class="form-control" formControlName="cpf">
+                    <input type="text" class="form-control" formControlName="cpf" maxlength="14"
+                        placeholder="Ex: 12345678900">
+                    <div *ngIf="formGroupIngresso.get('cpf')?.invalid && formGroupIngresso.get('cpf')?.touched"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        <span *ngIf="formGroupIngresso.get('cpf')?.errors?.['required']">O CPF é obrigatório.</span>
+                        <span *ngIf="formGroupIngresso.get('cpf')?.errors?.['minlength']">O CPF está muito curto.</span>
+                        <span *ngIf="formGroupIngresso.get('cpf')?.errors?.['maxlength']">O CPF está muito longo.</span>
+                        <span *ngIf="formGroupIngresso.get('cpf')?.errors?.['pattern']">Digite apenas números, pontos e
+                            traços.</span>
+                    </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label text-muted" style="font-size: 12px;">Jogo</label>
                     <select class="form-select" formControlName="jogo">
-                        <option value="Brasil x Marrocos">Brasil x Marrocos</option>
-                        <option value="Argentina x França">Argentina x França</option>
+                        <option value="" disabled selected>Selecione um jogo</option>
+                        <option *ngFor="let partida of jogosDisponiveis()"
+                            [value]="partida.timeMandante + ' x ' + partida.timeVisitante">
+                            {{ partida.timeMandante }} x {{ partida.timeVisitante }}
+                        </option>
                     </select>
+                    <div *ngIf="formGroupIngresso.get('jogo')?.invalid && formGroupIngresso.get('jogo')?.touched"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        <span *ngIf="formGroupIngresso.get('jogo')?.errors?.['required']">Selecione um jogo.</span>
+                    </div>
                 </div>
 
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label class="form-label text-muted" style="font-size: 12px;">Setor</label>
                         <select class="form-select" formControlName="setor">
+                            <option value="" disabled selected>Selecione</option>
                             <option value="A norte">A norte</option>
                             <option value="B sul">B sul</option>
                             <option value="VIP">VIP</option>
                         </select>
+                        <div *ngIf="formGroupIngresso.get('setor')?.invalid && formGroupIngresso.get('setor')?.touched"
+                            class="text-danger mt-1" style="font-size: 12px;">
+                            <span *ngIf="formGroupIngresso.get('setor')?.errors?.['required']">O setor é
+                                obrigatório.</span>
+                        </div>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label text-muted" style="font-size: 12px;">Assento</label>
                         <input type="text" class="form-control" formControlName="assento">
+                        <div *ngIf="formGroupIngresso.get('assento')?.invalid && formGroupIngresso.get('assento')?.touched"
+                            class="text-danger mt-1" style="font-size: 12px;">
+                            <span *ngIf="formGroupIngresso.get('assento')?.errors?.['required']">O assento é
+                                obrigatório.</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label text-muted" style="font-size: 12px;">Preço</label>
-                    <input type="number" class="form-control" formControlName="preco">
+                    <label class="form-label text-muted" style="font-size: 12px;">Preço (R$)</label>
+                    <input type="number" class="form-control" formControlName="preco" step="0.01">
+                    <div *ngIf="formGroupIngresso.get('preco')?.invalid && formGroupIngresso.get('preco')?.touched"
+                        class="text-danger mt-1" style="font-size: 12px;">
+                        <span *ngIf="formGroupIngresso.get('preco')?.errors?.['required']">O preço é obrigatório.</span>
+                        <span *ngIf="formGroupIngresso.get('preco')?.errors?.['min']">O preço não pode ser zero ou
+                            negativo.</span>
+                    </div>
                 </div>
-            </div>
 
+            </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn text-white px-4"
+                <button type="button" id="btnFecharModal" class="btn text-white px-4"
                     style="background-color: #9E9E9E; border-radius: 20px;" data-bs-dismiss="modal">Cancelar</button>
+
                 <button type="button" class="btn text-white px-4"
                     style="background-color: #5100FF; border-radius: 20px;" (click)="salvar()"
-                    data-bs-dismiss="modal">Salvar</button>
+                    [disabled]="formGroupIngresso.invalid">Salvar</button>
             </div>
 
         </div>

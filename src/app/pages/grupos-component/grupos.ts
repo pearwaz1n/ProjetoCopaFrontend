@@ -1,41 +1,56 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FutebolService } from '../../services/futebol-service';
+import { IngressosService } from '../../services/ingressos-service';
 
 @Component({
   selector: 'app-grupos',
   standalone: false,
   templateUrl: './grupos.html',
-  styleUrls: ['./grupos.css']
-
+  styleUrls: ['./grupos.css'] // Ajuste se necessário
 })
 export class GruposComponent implements OnInit {
 
-  // Signal que vai guardar a lista de grupos real vinda do banco/API
-  grupos = signal<any[]>([]);
+  // O nosso novo formato de dados: Uma lista que tem o nome do grupo e um array de strings com os times
+  grupos = signal<{ nome: string, times: string[] }[]>([]);
 
-  // Controla o spinner de carregamento
-  carregando = signal<boolean>(true);
-
-  constructor(private futebolService: FutebolService) { }
+  constructor(private ingressosService: IngressosService) { }
 
   ngOnInit(): void {
-    this.buscarGrupos();
+    this.carregarGrupos();
   }
 
-  buscarGrupos(): void {
-    // Chama o serviço real em vez de usar o Mock (dados falsos)
-    this.futebolService.getGruposCopa().subscribe({
+  carregarGrupos(): void {
+    this.ingressosService.getJogosDaCopa().subscribe({
       next: (dados) => {
-        // A API da FIFA retorna a tabela de classificação dentro da propriedade "standings"
-        this.grupos.set(dados.standings);
+        if (dados) {
+          // 1. Pega apenas os jogos válidos
+          const jogosValidos = dados.filter(jogo => jogo.timeMandante && jogo.timeVisitante);
 
-        // Desliga a bolinha de carregamento quando os dados chegam
-        this.carregando.set(false);
+          // 2. Cria um "Dicionário" (Map) onde a chave é o Grupo e o valor é uma lista sem repetições (Set) de times
+          const mapaGrupos = new Map<string, Set<string>>();
+
+          jogosValidos.forEach(jogo => {
+            if (!mapaGrupos.has(jogo.grupo)) {
+              mapaGrupos.set(jogo.grupo, new Set<string>());
+            }
+            // Adiciona os dois times no Set daquele grupo (o Set ignora nomes duplicados automaticamente)
+            mapaGrupos.get(jogo.grupo)!.add(jogo.timeMandante);
+            mapaGrupos.get(jogo.grupo)!.add(jogo.timeVisitante);
+          });
+
+          // 3. Converte o nosso Map para o formato visual e coloca em ordem alfabética
+          const listaGrupos = Array.from(mapaGrupos.entries()).map(([nome, timesSet]) => {
+            return {
+              nome: nome.replace('_', ' '), // Troca "GROUP_A" por "GROUP A" para ficar mais bonito
+              times: Array.from(timesSet).sort() // Coloca os países em ordem alfabética
+            };
+          }).sort((a, b) => a.nome.localeCompare(b.nome)); // Organiza os grupos do A ao L
+
+          // Salva no Signal para desenhar a tela
+          this.grupos.set(listaGrupos);
+        }
       },
-      error: (erro) => {
-        console.error('Erro ao buscar a classificação dos grupos:', erro);
-        // Desliga o carregamento mesmo se der erro, para não ficar girando infinitamente
-        this.carregando.set(false);
+      error: (err) => {
+        console.error('Erro ao carregar grupos', err);
       }
     });
   }
