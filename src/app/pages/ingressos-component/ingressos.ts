@@ -19,6 +19,13 @@ export class IngressosComponent implements OnInit {
   isEditing: boolean = false;
   termoBusca: string = '';
 
+  // Lista padrão de assentos para manter a consistência da bilheteria
+  assentosPadrao: string[] = [
+    'A-01', 'A-02', 'A-03', 'A-04', 'A-05',
+    'B-01', 'B-02', 'B-03', 'B-04', 'B-05',
+    'VIP-01', 'VIP-02', 'VIP-03'
+  ];
+
   constructor(
     private formBuilder: FormBuilder,
     private ingressosService: IngressosService
@@ -66,12 +73,18 @@ export class IngressosComponent implements OnInit {
       }
     });
   }
+
   // Busca os jogos disponíveis de uma API externa para preencher as opções de seleção
   carregarJogos(): void {
     this.ingressosService.getJogosDaCopa().subscribe({
       next: (dados) => {
         if (dados) {
-          const jogosValidos = dados.filter(jogo => jogo.timeMandante && jogo.timeVisitante);
+          // Filtra os jogos válidos e oculta aqueles que já foram concluídos (status FINISHED)
+          const jogosValidos = dados.filter(jogo =>
+            jogo.timeMandante &&
+            jogo.timeVisitante &&
+            jogo.status !== 'FINISHED'
+          );
           this.jogosDisponiveis.set(jogosValidos);
         }
       },

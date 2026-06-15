@@ -14,7 +14,7 @@ export class FutebolService {
 
   constructor(private http: HttpClient) { }
 
-  // Função para anexar a sua chave secreta na requisição
+  // Anexa a chave secreta na requisição
   private getHeaders() {
     return {
       headers: new HttpHeaders({
