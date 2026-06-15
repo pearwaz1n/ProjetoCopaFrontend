@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IngressoVenda } from '../ingresso';
 
-//interface api
 export interface JogoCopa {
   dataHora: string;
   grupo: string;
   timeMandante: string;
   timeVisitante: string;
+  status: string;
+  placarMandante: number | null;
+  placarVisitante: number | null;
 }
 
 
@@ -43,7 +45,7 @@ export class IngressosService {
   update(ingresso: IngressoVenda): Observable<IngressoVenda> {
     return this.http.put<IngressoVenda>(`${this.apiUrl}/${ingresso.id}`, ingresso);
   }
-  //pegar jogos
+
   getJogosDaCopa() {
     return this.http.get<JogoCopa[]>(this.jogosUrl);
   }

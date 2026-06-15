@@ -23,6 +23,7 @@ export class IngressosComponent implements OnInit {
     private formBuilder: FormBuilder,
     private ingressosService: IngressosService
   ) {
+    // Inicializa o formulário reativo com regras de validação para cada campo
     this.formGroupIngresso = this.formBuilder.group({
       id: [''],
       cpf: ['', [
@@ -47,10 +48,12 @@ export class IngressosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Ao iniciar o componente, carrega a lista de ingressos e os jogos da API
     this.carregarIngressos();
-    this.carregarJogos(); // <-- Chama a função nova
+    this.carregarJogos();
   }
 
+  // Busca a lista de ingressos já cadastrados no backend
   carregarIngressos(): void {
     this.ingressosService.getAllIngressos().subscribe({
       next: (dados) => {
@@ -63,6 +66,7 @@ export class IngressosComponent implements OnInit {
       }
     });
   }
+  // Busca os jogos disponíveis de uma API externa para preencher as opções de seleção
   carregarJogos(): void {
     this.ingressosService.getJogosDaCopa().subscribe({
       next: (dados) => {
@@ -77,23 +81,27 @@ export class IngressosComponent implements OnInit {
     });
   }
 
+  // Limpa o formulário e reseta o estado para iniciar o cadastro de um novo ingresso
   prepararCadastro(): void {
     this.isEditing = false;
     this.formGroupIngresso.reset();
     this.erroServidor.set('');
   }
 
+  // Preenche o formulário com os dados de um ingresso existente para a sua edição
   prepararEdicao(ingresso: IngressoVenda): void {
     this.isEditing = true;
     this.formGroupIngresso.patchValue(ingresso);
   }
 
+  // Remove um ingresso do sistema através do backend
   excluir(ingresso: IngressoVenda): void {
     this.ingressosService.delete(ingresso).subscribe(() => {
       this.carregarIngressos();
     });
   }
 
+  // Valida os dados do formulário e realiza a criação ou atualização do ingresso
   salvar(): void {
     if (this.formGroupIngresso.invalid) {
       this.formGroupIngresso.markAllAsTouched();
@@ -116,6 +124,7 @@ export class IngressosComponent implements OnInit {
     }
   }
 
+  // Exibe mensagens de erro amigáveis baseadas na resposta da API
   lidarComErroBackend(err: any): void {
     console.error('Erro do servidor:', err);
     if (err.status === 400) {
@@ -125,6 +134,7 @@ export class IngressosComponent implements OnInit {
     }
   }
 
+  // Atualiza a lista, limpa o formulário e fecha o modal de cadastro após sucesso
   finalizarSalvamento(): void {
     this.carregarIngressos();
     this.formGroupIngresso.reset();

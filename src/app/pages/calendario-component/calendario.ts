@@ -1,6 +1,11 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { IngressosService, JogoCopa } from '../../services/ingressos-service';
 
+// Interface adaptada para o ecrã
+interface JogoExibicao extends JogoCopa {
+  concluido: boolean;
+}
+
 @Component({
   selector: 'app-calendario',
   standalone: false,
@@ -9,8 +14,7 @@ import { IngressosService, JogoCopa } from '../../services/ingressos-service';
 })
 export class CalendarioComponent implements OnInit {
 
-  // O Signal que vai guardar a lista pronta para a tela
-  jogosDisponiveis = signal<JogoCopa[]>([]);
+  jogosDisponiveis = signal<JogoExibicao[]>([]);
 
   constructor(private ingressosService: IngressosService) { }
 
@@ -22,9 +26,17 @@ export class CalendarioComponent implements OnInit {
     this.ingressosService.getJogosDaCopa().subscribe({
       next: (dados) => {
         if (dados) {
-          // Filtra para mostrar apenas jogos com times definidos
-          const jogosValidos = dados.filter(jogo => jogo.timeMandante && jogo.timeVisitante);
-          this.jogosDisponiveis.set(jogosValidos);
+          const jogosTratados = dados
+            .filter(jogo => jogo.timeMandante && jogo.timeVisitante)
+            .map(jogo => {
+              return {
+                ...jogo,
+                // A API gringa devolve "FINISHED" quando o jogo já acabou
+                concluido: jogo.status === 'FINISHED'
+              };
+            });
+
+          this.jogosDisponiveis.set(jogosTratados);
         }
       },
       error: (err) => {
