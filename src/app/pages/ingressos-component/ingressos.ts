@@ -19,12 +19,20 @@ export class IngressosComponent implements OnInit {
   isEditing: boolean = false;
   termoBusca: string = '';
 
-  // Lista padrão de assentos para manter a consistência da bilheteria
-  assentosPadrao: string[] = [
-    'A-01', 'A-02', 'A-03', 'A-04', 'A-05',
-    'B-01', 'B-02', 'B-03', 'B-04', 'B-05',
-    'VIP-01', 'VIP-02', 'VIP-03'
-  ];
+  // Mapas assentos
+  mapaAssentos = signal([
+    ['A-01', 'A-02', 'A-03', 'A-04', 'A-05', 'A-06', 'A-07', 'A-08'],
+    ['B-01', 'B-02', 'B-03', 'B-04', 'B-05', 'B-06', 'B-07', 'B-08'],
+    ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08'],
+    ['D-01', 'D-02', 'D-03', 'D-04', 'D-05', 'D-06', 'D-07', 'D-08'],
+    ['', '', 'VIP-01', 'VIP-02', 'VIP-03', 'VIP-04', '', ''] //espacos vazios para centralizar
+  ]);
+
+  // Variável para guardar qual cadeira está clicada
+  assentoSelecionado = signal<string>('');
+
+  // Guarda a lista de cadeiras que já foram vendidas para o jogo selecionado
+  assentosOcupados = signal<string[]>([]);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -58,6 +66,13 @@ export class IngressosComponent implements OnInit {
     // Ao iniciar o componente, carrega a lista de ingressos e os jogos da API
     this.carregarIngressos();
     this.carregarJogos();
+
+    // Escuta as mudanças no campo de jogo para recalcular os assentos ocupados
+    this.formGroupIngresso.get('jogo')?.valueChanges.subscribe(jogoSelecionado => {
+      this.atualizarAssentosOcupados(jogoSelecionado);
+      this.assentoSelecionado.set(''); // Limpa a cadeira selecionada ao trocar de jogo
+      this.formGroupIngresso.patchValue({ assento: '' });
+    });
   }
 
   // Busca a lista de ingressos já cadastrados no backend
@@ -66,6 +81,11 @@ export class IngressosComponent implements OnInit {
       next: (dados) => {
         if (dados) {
           this.ingressos.set(dados);
+          // Atualiza o mapa caso um jogo já esteja selecionado na edição
+          const jogoAtual = this.formGroupIngresso.get('jogo')?.value;
+          if (jogoAtual) {
+            this.atualizarAssentosOcupados(jogoAtual);
+          }
         }
       },
       error: (err) => {
@@ -94,17 +114,43 @@ export class IngressosComponent implements OnInit {
     });
   }
 
+  // Filtra os ingressos do banco e separa apenas os assentos vendidos para o jogo atual
+  atualizarAssentosOcupados(jogoSelecionado: string): void {
+    if (!jogoSelecionado) {
+      this.assentosOcupados.set([]);
+      return;
+    }
+
+    const ocupados = this.ingressos()
+      .filter(ingresso => ingresso.jogo === jogoSelecionado)
+      .map(ingresso => ingresso.assento);
+
+    this.assentosOcupados.set(ocupados);
+  }
+
+  // Atribui a cadeira clicada ao formulário, ignorando as vendidas e espaços vazios
+  selecionarAssento(assento: string): void {
+    if (!assento) return; // Ignora se clicar no espaço vazio
+
+    if (this.assentosOcupados().includes(assento)) return; // Ignora se a cadeira já estiver ocupada
+
+    this.assentoSelecionado.set(assento); // Pinta a cadeira
+    this.formGroupIngresso.patchValue({ assento: assento }); // Joga pro formulário
+  }
+
   // Limpa o formulário e reseta o estado para iniciar o cadastro de um novo ingresso
   prepararCadastro(): void {
     this.isEditing = false;
     this.formGroupIngresso.reset();
     this.erroServidor.set('');
+    this.assentoSelecionado.set('');
   }
 
   // Preenche o formulário com os dados de um ingresso existente para a sua edição
   prepararEdicao(ingresso: IngressoVenda): void {
     this.isEditing = true;
     this.formGroupIngresso.patchValue(ingresso);
+    this.assentoSelecionado.set(ingresso.assento); // Pinta a cadeira na edição
   }
 
   // Remove um ingresso do sistema através do backend

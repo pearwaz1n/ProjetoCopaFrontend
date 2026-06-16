@@ -138,18 +138,35 @@
                                 obrigatório.</span>
                         </div>
                     </div>
-                    <div class="col-6 mb-3">
-                        <label class="form-label text-muted" style="font-size: 12px;">Assento</label>
-                        <select class="form-select" formControlName="assento">
-                            <option value="" disabled selected>Selecione um assento</option>
-                            <option *ngFor="let item of assentosPadrao" [value]="item">{{ item }}</option>
-                        </select>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted" style="font-size: 12px;">Mapa de Assentos</label>
+
+                        <div class="seat-map-container">
+                            <div class="screen-indicator">CAMPO</div>
+
+                            <div class="seat-row" *ngFor="let fileira of mapaAssentos()">
+
+                                <div class="seat" *ngFor="let assento of fileira" [class.invisible]="!assento"
+                                    [class.sold]="assentosOcupados().includes(assento)"
+                                    [class.selected]="assento === assentoSelecionado()"
+                                    (click)="selecionarAssento(assento)">
+                                    {{ assento }}
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <input type="hidden" formControlName="assento">
+
                         <div *ngIf="formGroupIngresso.get('assento')?.invalid && formGroupIngresso.get('assento')?.touched"
                             class="text-danger mt-1" style="font-size: 12px;">
-                            <span *ngIf="formGroupIngresso.get('assento')?.errors?.['required']">O assento é
-                                obrigatório.</span>
+                            <span *ngIf="formGroupIngresso.get('assento')?.errors?.['required']">
+                                Por favor, clique em um assento no mapa.
+                            </span>
                         </div>
                     </div>
+
                     <div class="mb-4">
                         <label class="form-label text-muted" style="font-size: 12px;">Preço (R$)</label>
                         <input type="number" class="form-control" formControlName="preco" step="0.01">
@@ -163,6 +180,7 @@
                     </div>
 
                 </div>
+
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" id="btnFecharModal" class="btn text-white px-4"
                         style="background-color: #9E9E9E; border-radius: 20px;"
@@ -176,3 +194,4 @@
             </div>
         </div>
     </div>
+</div>
